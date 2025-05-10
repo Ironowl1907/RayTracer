@@ -1,5 +1,8 @@
 #include <iostream>
 
+#include "Utils/Color.h"
+#include "Utils/vec3.h"
+
 constexpr int IMG_WIDTH = 256;
 constexpr int IMG_HEIGHT = 256;
 
@@ -10,15 +13,9 @@ int main() {
     std::clog << "\rScanlines remaining: " << (IMG_HEIGHT - i) << ' '
               << std::flush;
     for (int j = 0; j < IMG_WIDTH; ++j) {
-      auto r = (double)i / (IMG_WIDTH - 1);
-      auto g = (double)j / (IMG_WIDTH - 1);
-      auto b = 0;
-
-      int ir = int(255.999 * r);
-      int ig = int(255.999 * g);
-      int ib = int(255.999 * b);
-
-      std::cout << ir << ' ' << ig << ' ' << ib << '\n';
+      auto pixel_color =
+          color(double(i) / (IMG_WIDTH - 1), double(j) / (IMG_HEIGHT - 1), 0);
+      write_color(std::cout, pixel_color);
     }
   }
 
