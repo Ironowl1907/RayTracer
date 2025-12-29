@@ -1,8 +1,15 @@
+#include <cmath>
 #include <iostream>
+#include <memory>
 
 #include "Utils/Color.h"
 #include "Utils/Ray.h"
+#include "Utils/hittable.h"
+#include "Utils/hittable_list.h"
+#include "Utils/sphere.h"
 #include "Utils/vec3.h"
+
+static HittableList g_world;
 
 double hitSphere(const Point3 &center, double radius, const Ray &r) {
   Vec3 oc = center - r.origin();
@@ -19,10 +26,9 @@ double hitSphere(const Point3 &center, double radius, const Ray &r) {
 }
 
 Color rayColor(const Ray &r) {
-  auto t = hitSphere(Point3(0.0, 0.0, -1.0), 0.5, r);
-  if (t > 0.0) {
-    Vec3 n = unitVector(r.at(t) - Vec3(0.0, 0.0, -1.0));
-    return 0.5 * Color(n.x() + 1, n.y() + 1, n.z() + 1);
+  HitRecord rec;
+  if (g_world.hit(r, 0, INFINITY, rec)) {
+    return 0.5 * (rec.Normal + Color(1, 1, 1));
   }
   Vec3 unitDirection = unitVector(r.direction());
   auto a = 0.5 * (unitDirection.y() + 1.0);
@@ -30,10 +36,9 @@ Color rayColor(const Ray &r) {
 }
 
 int main() {
-
   // Image
   auto aspectRatio = 16.0 / 9.0;
-  int imageWidth = 400;
+  int imageWidth = 800;
 
   int imageHeight = int(imageWidth / aspectRatio);
   imageHeight = (imageHeight < 1) ? 1 : imageHeight;
@@ -54,6 +59,11 @@ int main() {
   auto viewportUpperLeft =
       cameraCenter - Vec3(0, 0, focalLenght) - viewportU / 2 - viewportV / 2;
   auto pixel00Loc = viewportUpperLeft + 0.5 * (pixelDeltaU + pixelDeltaV);
+
+  // World
+
+  g_world.add(std::make_shared<Sphere>(Point3(0, 0, -1), 0.5));
+  g_world.add(std::make_shared<Sphere>(Point3(0, -100.5, -1), 100));
 
   // Render
   std::cout << "P3\n" << imageWidth << ' ' << imageHeight << "\n255\n";

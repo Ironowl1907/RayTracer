@@ -3,7 +3,7 @@
 #include "hittable.h"
 #include "vec3.h"
 #include <cmath>
-class Sphere : public Hittlable {
+class Sphere : public Hittable {
 public:
   Sphere(const Point3 &center, const double radius)
       : m_center(center), m_radius(std::fmax(0, radius)) {}

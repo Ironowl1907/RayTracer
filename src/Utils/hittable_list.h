@@ -7,7 +7,7 @@
 using std::shared_ptr;
 using std::unique_ptr;
 
-class HittableList : Hittable {
+class HittableList : public Hittable {
 public:
   std::vector<shared_ptr<Hittable>> Objects;
 
