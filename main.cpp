@@ -4,9 +4,27 @@
 #include "Utils/Ray.h"
 #include "Utils/vec3.h"
 
+double hitSphere(const Point3 &center, double radius, const Ray &r) {
+  Vec3 oc = center - r.origin();
+  auto a = dot(r.direction(), r.direction());
+  auto b = -2.0 * dot(r.direction(), oc);
+  auto c = dot(oc, oc) - radius * radius;
+  auto discriminant = b * b - 4 * a * c;
+
+  if (discriminant < 0) {
+    return -1.0;
+  }
+  return (-b - std::sqrt(discriminant) / (2.0 * a));
+}
+
 Color rayColor(const Ray &r) {
-  Vec3 unit_direction = unit_vector(r.direction());
-  auto a = 0.5 * (unit_direction.y() + 1.0);
+  auto t = hitSphere(Point3(0.0, 0.0, -1.0), 0.5, r);
+  if (t > 0.0) {
+    Vec3 n = unitVector(r.at(t) - Vec3(0.0, 0.0, -1.0));
+    return 0.5 * Color(n.x() + 1, n.y() + 1, n.z() + 1);
+  }
+  Vec3 unitDirection = unitVector(r.direction());
+  auto a = 0.5 * (unitDirection.y() + 1.0);
   return (1.0 - a) * Color(1.0, 1.0, 1.0) + a * Color(0.5, 0.7, 1.0);
 }
 
@@ -32,9 +50,9 @@ int main() {
   auto pixelDeltaV = viewportV / imageHeight;
 
   // Calculate the location of the upper left pixel.
-  auto viewport_upper_left =
+  auto viewportUpperLeft =
       cameraCenter - Vec3(0, 0, focalLenght) - viewportU / 2 - viewportV / 2;
-  auto pixel00_loc = viewport_upper_left + 0.5 * (pixelDeltaU + pixelDeltaV);
+  auto pixel00Loc = viewportUpperLeft + 0.5 * (pixelDeltaU + pixelDeltaV);
 
   // Render
   std::cout << "P3\n" << imageWidth << ' ' << imageHeight << "\n255\n";
@@ -43,12 +61,12 @@ int main() {
     std::clog << "\rScanlines remaining: " << (imageHeight - j) << ' '
               << std::flush;
     for (int i = 0; i < imageWidth; i++) {
-      auto pixel_center = pixel00_loc + (i * pixelDeltaU) + (j * pixelDeltaV);
-      auto ray_direction = pixel_center - cameraCenter;
-      Ray r(cameraCenter, ray_direction);
+      auto pixelCenter = pixel00Loc + (i * pixelDeltaU) + (j * pixelDeltaV);
+      auto rayDirection = pixelCenter - cameraCenter;
+      Ray r(cameraCenter, rayDirection);
 
       Color pixelColor = rayColor(r);
-      write_color(std::cout, pixelColor);
+      writeColor(std::cout, pixelColor);
     }
   }
   std::clog << "\rDone.                 \n";
