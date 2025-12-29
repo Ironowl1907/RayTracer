@@ -8,7 +8,7 @@ public:
   Sphere(const Point3 &center, const double radius)
       : m_center(center), m_radius(std::fmax(0, radius)) {}
 
-  virtual bool hit(const Ray &r, double rayTMin, double rayTMax,
+  virtual bool hit(const Ray &r, const Interval &rayI,
                    HitRecord &rec) const override {
 
     Vec3 oc = m_center - r.origin();
@@ -23,10 +23,12 @@ public:
     auto sqrtd = std::sqrt(discriminant);
 
     auto root = (h - sqrtd) / a;
-    if (root <= rayTMin || rayTMax <= root) {
+    if (!rayI.surrounds(root)) {
       root = (h + sqrtd) / a;
-      if (root <= rayTMin || rayTMax <= root)
+
+      if (!rayI.surrounds(root)) {
         return false;
+      }
     }
 
     rec.T = root;

@@ -18,14 +18,14 @@ public:
 
   void add(shared_ptr<Hittable> object) { Objects.push_back(object); }
 
-  virtual bool hit(const Ray &r, double rayTMin, double rayTMax,
+  virtual bool hit(const Ray &r, const Interval & rayI,
                    HitRecord &rec) const override {
     HitRecord tempRec;
     bool hitAnything = false;
-    auto closeesSoFar = rayTMax;
+    auto closeesSoFar = rayI.Max;
 
     for (const auto &object : Objects) {
-      if (object->hit(r, rayTMin, closeesSoFar, tempRec)) {
+      if (object->hit(r, Interval(rayI.Min, closeesSoFar), tempRec)) {
         hitAnything = true;
         closeesSoFar = tempRec.T;
         rec = tempRec;

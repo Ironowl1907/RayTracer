@@ -6,6 +6,7 @@
 #include "Utils/Ray.h"
 #include "Utils/hittable.h"
 #include "Utils/hittable_list.h"
+#include "Utils/interval.h"
 #include "Utils/sphere.h"
 #include "Utils/vec3.h"
 
@@ -27,7 +28,7 @@ double hitSphere(const Point3 &center, double radius, const Ray &r) {
 
 Color rayColor(const Ray &r) {
   HitRecord rec;
-  if (g_world.hit(r, 0, INFINITY, rec)) {
+  if (g_world.hit(r, Interval(0, INFINITY), rec)) {
     return 0.5 * (rec.Normal + Color(1, 1, 1));
   }
   Vec3 unitDirection = unitVector(r.direction());
