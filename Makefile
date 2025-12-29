@@ -10,7 +10,8 @@ main.o: src/main.cpp
 main: main.o
 	$(CC) -o $(EXECNAME) $^ $(CFLAGS)
 
-
 test: main
 	./app > image.ppm
 	feh image.ppm
+clean:
+	rm main.o app image.ppm
