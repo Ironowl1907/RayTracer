@@ -8,4 +8,9 @@ main.o: src/main.cpp
 	$(CC) -c -o $@ $^ $(CFLAGS)
 
 main: main.o
-	$(CC) -o $(EXECNAME)  $^  $(CFLAGS)
+	$(CC) -o $(EXECNAME) $^ $(CFLAGS)
+
+
+test: main
+	./app > image.ppm
+	feh image.ppm
