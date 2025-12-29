@@ -1,26 +1,25 @@
 #pragma once
+
 #include "Ray.h"
 #include "vec3.h"
 
-struct hit_record {
-  point3 p;
-  double t;
-  vec3 normal;
-  bool front_face;
+class HitRecord {
+public:
+  Point3 P;
+  Vec3 Normal;
+  double T;
+  bool FrontFace;
 
-  void set_face_normal(const ray &r, const vec3 &outward_normal) {
-    // Sets the hit record normal vector.
-    // NOTE: the parameter `outward_normal` is assumed to have unit length.
-
-    front_face = dot(r.direction(), outward_normal) < 0;
-    normal = front_face ? outward_normal : -outward_normal;
+  void setFaceNormal(const Ray &r, const Vec3 &outwardNormal) {
+    FrontFace = dot(r.direction(), outwardNormal) < 0;
+    Normal = FrontFace ? outwardNormal : -outwardNormal;
   }
 };
 
-class hittable {
+class Hittlable {
 public:
-  virtual ~hittable() = default;
+  virtual ~Hittlable() = default;
 
-  virtual bool hit(const ray &r, double ray_tmin, double ray_tmax,
-                   hit_record &rec) const = 0;
+  virtual bool hit(const Ray &r, double rayTMin, double rayTMax,
+                   HitRecord &rec) const = 0;
 };
