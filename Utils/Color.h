@@ -4,9 +4,9 @@
 #include <iostream>
 #include <ostream>
 
-using color = vec3;
+using Color = Vec3;
 
-inline void write_color(std::ostream &out, const color &pixel_color) {
+inline void write_color(std::ostream &out, const Color &pixel_color) {
   auto r = pixel_color.x();
   auto g = pixel_color.y();
   auto b = pixel_color.z();
