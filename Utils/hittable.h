@@ -16,9 +16,9 @@ public:
   }
 };
 
-class Hittlable {
+class Hittable {
 public:
-  virtual ~Hittlable() = default;
+  virtual ~Hittable() = default;
 
   virtual bool hit(const Ray &r, double rayTMin, double rayTMax,
                    HitRecord &rec) const = 0;
