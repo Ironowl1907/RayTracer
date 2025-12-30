@@ -12,20 +12,6 @@
 
 static HittableList g_world;
 
-double hitSphere(const Point3 &center, double radius, const Ray &r) {
-  Vec3 oc = center - r.origin();
-  auto a = r.direction().length_squared();
-  auto h = dot(r.direction(), oc);
-  auto c = oc.length_squared() - radius * radius;
-  auto discriminant = h * h - a * c;
-
-  if (discriminant < 0) {
-    return -1.0;
-  } else {
-    return (h - std::sqrt(discriminant)) / a;
-  }
-}
-
 Color rayColor(const Ray &r) {
   HitRecord rec;
   if (g_world.hit(r, Interval(0, INFINITY), rec)) {
@@ -62,7 +48,6 @@ int main() {
   auto pixel00Loc = viewportUpperLeft + 0.5 * (pixelDeltaU + pixelDeltaV);
 
   // World
-
   g_world.add(std::make_shared<Sphere>(Point3(0, 0, -1), 0.5));
   g_world.add(std::make_shared<Sphere>(Point3(0, -100.5, -1), 100));
 
