@@ -38,16 +38,19 @@ private:
 
 class Metal : public Material {
 public:
-  Metal(const Color &albedo) : m_albedo(albedo) {}
+  Metal(const Color &albedo, const double &fuzz)
+      : m_albedo(albedo), m_fuzz(fuzz) {}
 
   bool scatter(const Ray &rIn, const HitRecord &rec, Color &attenuation,
                Ray &scattered) const override {
     Vec3 reflected = reflect(rIn.direction(), rec.Normal);
+    reflected = unitVector(reflected) + (m_fuzz * randomUnitVector());
     scattered = Ray(rec.P, reflected);
     attenuation = m_albedo;
-    return true;
+    return (dot(scattered.direction(), rec.Normal) > 0);
   }
 
 private:
   Color m_albedo;
+  double m_fuzz;
 };
