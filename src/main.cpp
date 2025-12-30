@@ -15,7 +15,8 @@ int main() {
   Camera cam;
   cam.AspectRatio = 16.0 / 9.0;
   cam.ImageWidth = 400;
-  cam.SamplesPerPixel = 20;
+  cam.SamplesPerPixel = 100;
+  cam.MaxDepth = 100;
 
   cam.render(world);
 
