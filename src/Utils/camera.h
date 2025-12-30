@@ -3,6 +3,7 @@
 #include "Color.h"
 #include "hittable.h"
 #include "interval.h"
+#include "material.h"
 #include "random.h"
 #include "vec3.h"
 #include <cmath>
@@ -78,9 +79,12 @@ private:
 
     HitRecord rec;
     if (world.hit(r, Interval(0.001, INFINITY), rec)) {
-      // Vec3 direction = randomOnHemisphere(rec.Normal);
-      Vec3 direction = rec.Normal + randomUnitVector();
-      return 0.5 * rayColor(Ray(rec.P, direction), depth - 1, world);
+      Ray scattered;
+      Color attenuation;
+      if (rec.Mat->scatter(r, rec, attenuation, scattered)) {
+        return attenuation * rayColor(scattered, depth - 1, world);
+      }
+      return Color(0, 0, 0);
     }
 
     Vec3 unitDirection = unitVector(r.direction());
