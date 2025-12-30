@@ -12,6 +12,6 @@ main: main.o
 
 test: main
 	./app > image.ppm
-	exec feh image.ppm
+	feh image.ppm
 clean:
 	rm main.o app image.ppm
