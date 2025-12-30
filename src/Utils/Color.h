@@ -1,5 +1,6 @@
 #pragma once
 
+#include "interval.h"
 #include "vec3.h"
 #include <iostream>
 #include <ostream>
@@ -11,9 +12,10 @@ inline void writeColor(std::ostream &out, const Color &pixel_color) {
   auto g = pixel_color.y();
   auto b = pixel_color.z();
 
-  int rbyte = int(255.999 * r);
-  int gbyte = int(255.999 * g);
-  int bbyte = int(255.999 * b);
+  static const Interval intensity(0.000, 0.999);
+  int rbyte = int(256 * intensity.clamp(r));
+  int gbyte = int(256 * intensity.clamp(g));
+  int bbyte = int(256 * intensity.clamp(b));
 
   out << rbyte << ' ' << gbyte << ' ' << bbyte << '\n';
 }

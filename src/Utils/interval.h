@@ -15,6 +15,14 @@ public:
   bool contains(double x) const { return Min <= x && Max >= x; }
   bool surrounds(double x) const { return Min < x && Max > x; }
 
+  double clamp(double x) const {
+    if (x < Min)
+      return Min;
+    if (x > Max)
+      return Max;
+    return x;
+  }
+
   static const Interval empty, universe;
 
 private:
