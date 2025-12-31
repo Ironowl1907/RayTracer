@@ -7,12 +7,17 @@
 #include "random.h"
 #include "vec3.h"
 #include <cmath>
+
+#define PI 3.14159
+
 class Camera {
 public:
   double AspectRatio = 16.0 / 9.0;
   int ImageWidth = 800;
   int SamplesPerPixel = 10;
   int MaxDepth = 10;
+
+  double vFov = 90;
 
   void render(const Hittable &world) {
     initialize();
@@ -42,7 +47,9 @@ private:
     m_pixelSamplesScale = 1.0 / SamplesPerPixel;
 
     auto focalLenght = 1.0;
-    auto viewportHeight = 2.0;
+    auto theta = vFov * PI / 180;
+    auto h = std::tan(theta / 2);
+    auto viewportHeight = 2 * h * focalLenght;
     auto viewportWidth = viewportHeight * (double(ImageWidth) / m_imageHeight);
     m_center = Point3(0, 0, 0);
 
