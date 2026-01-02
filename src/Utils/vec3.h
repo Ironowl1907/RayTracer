@@ -106,6 +106,15 @@ inline Vec3 randomUnitVector() {
   }
 }
 
+inline Vec3 randomInUnitDisk() {
+  while (true) {
+    auto p = Vec3(Random::double_t(-1, 1), Random::double_t(-1, 1), 0);
+    if (p.length_squared() < 1) {
+      return p;
+    }
+  }
+}
+
 inline Vec3 randomOnHemisphere(const Vec3 &normal) {
   Vec3 on_unit_sphere = randomUnitVector();
   if (dot(on_unit_sphere, normal) > 0.0)

@@ -22,6 +22,9 @@ public:
   Point3 LookAt = Point3(0, 0, -1);
   Vec3 VUp = Vec3(0, 1, 0);
 
+  double DefocusAngle = 0;
+  double FocusDist = 10;
+
   void render(const Hittable &world) {
     initialize();
 
@@ -49,10 +52,9 @@ private:
 
     m_pixelSamplesScale = 1.0 / SamplesPerPixel;
 
-    auto focalLenght = (LookFrom - LookAt).length();
     auto theta = VFov * PI / 180;
     auto h = std::tan(theta / 2);
-    auto viewportHeight = 2 * h * focalLenght;
+    auto viewportHeight = 2 * h * FocusDist;
     auto viewportWidth = viewportHeight * (double(ImageWidth) / m_imageHeight);
     m_center = LookFrom;
 
@@ -67,8 +69,12 @@ private:
     m_pixelDeltaV = viewportV / m_imageHeight;
 
     auto viewportUpperLeft =
-        m_center - (focalLenght * m_w) - viewportU / 2 - viewportV / 2;
+        m_center - (FocusDist * m_w) - viewportU / 2 - viewportV / 2;
     m_pixel00Loc = viewportUpperLeft + 0.5 * (m_pixelDeltaU + m_pixelDeltaV);
+
+    auto defocus_radius = FocusDist * std::tan((DefocusAngle / 2) * PI / 180);
+    m_defocusDiskU = m_u * defocus_radius;
+    m_defocusDiskV = m_v * defocus_radius;
   }
 
   Ray getRay(int i, int j) const {
@@ -76,7 +82,7 @@ private:
     auto pixel_sample = m_pixel00Loc + ((i + offset.x()) * m_pixelDeltaU) +
                         ((j + offset.y()) * m_pixelDeltaV);
 
-    auto ray_origin = m_center;
+    auto ray_origin = (DefocusAngle <= 0) ? m_center : defocusDiskSample();
     auto ray_direction = pixel_sample - ray_origin;
 
     return Ray(ray_origin, ray_direction);
@@ -84,6 +90,11 @@ private:
 
   Vec3 sampleSquare() const {
     return Vec3(Random::double_t() - 0.5, Random::double_t() - 0.5, 0);
+  }
+
+  Point3 defocusDiskSample() const {
+    auto p = randomInUnitDisk();
+    return m_center + (p[0] * m_defocusDiskU) + (p[1] * m_defocusDiskV);
   }
 
   Color rayColor(const Ray &r, const int depth, const Hittable &world) const {
@@ -114,4 +125,6 @@ private:
   Vec3 m_pixelDeltaU;
   Vec3 m_pixelDeltaV;
   Vec3 m_u, m_v, m_w;
+  Vec3 m_defocusDiskU;
+  Vec3 m_defocusDiskV;
 };

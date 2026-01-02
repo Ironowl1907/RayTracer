@@ -38,6 +38,9 @@ int main() {
   cam.LookAt = Point3(0, 0, -1);
   cam.VUp = Vec3(0, 1, 0);
 
+  cam.DefocusAngle = 10.0;
+  cam.FocusDist = 3.4;
+
   cam.render(world);
 
   // Render
