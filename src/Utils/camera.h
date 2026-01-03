@@ -9,6 +9,7 @@
 #include <cmath>
 #include <iostream>
 #include <ostream>
+#include <thread>
 
 #define PI 3.14159
 
@@ -30,19 +31,46 @@ public:
   void render(const Hittable &world) {
     initialize();
 
-    for (int j = 0; j < m_imageHeight; j++) {
-      std::clog << "\rScanlines remaining: " << (m_imageHeight - j) << ' '
-                << std::flush;
-      for (int i = 0; i < ImageWidth; i++) {
-        Color pixelColor(0, 0, 0);
-        for (int sample = 0; sample < SamplesPerPixel; ++sample) {
-          Ray r = getRay(i, j);
-          pixelColor += rayColor(r, MaxDepth, world);
+    int nCores = std::thread::hardware_concurrency();
+    if (nCores <= 0)
+      nCores = 1;
+
+    int rowsPerThread = m_imageHeight / nCores;
+    int remainder = m_imageHeight % nCores;
+
+    std::vector<std::thread> threads;
+
+    auto renderRows = [this, &world](int from, int to) {
+      for (int j = from; j < to; ++j) {
+        for (int i = 0; i < ImageWidth; ++i) {
+          Color pixelColor(0, 0, 0);
+
+          for (int sample = 0; sample < SamplesPerPixel; ++sample) {
+            Ray r = getRay(i, j);
+            pixelColor += rayColor(r, MaxDepth, world);
+          }
+
+          m_framebuffer[j * ImageWidth + i] = m_pixelSamplesScale * pixelColor;
         }
-        m_framebuffer[j * ImageWidth + i] = m_pixelSamplesScale * pixelColor;
       }
+    };
+
+    int rowStart = 0;
+    for (int i = 0; i < nCores; ++i) {
+      int rowEnd = rowStart + rowsPerThread;
+      if (i == nCores - 1) {
+        rowEnd += remainder;
+      }
+
+      threads.emplace_back(renderRows, rowStart, rowEnd);
+      rowStart = rowEnd;
     }
-    std::clog << "\rDone.                 \n";
+
+    for (auto &t : threads) {
+      t.join();
+    }
+
+    std::clog << "Done.\n";
     writeToImage();
   }
 
