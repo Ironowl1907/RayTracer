@@ -6,16 +6,21 @@
 #include <memory>
 class Sphere : public Hittable {
 public:
-  Sphere(const Point3 &center, const double radius,
+  Sphere(const Point3 &staticCenter, double radius,
          std::shared_ptr<Material> mat)
-      : m_center(center), m_radius(std::fmax(0, radius)), m_mat(mat) {
-    // TODO: Initialize the material pointer
-  }
+      : m_center(staticCenter, Vec3(0, 0, 0)), m_radius(std::fmax(0, radius)),
+        m_mat(mat) {}
+
+  Sphere(const Point3 &center1, const Point3 &center2, double radius,
+         std::shared_ptr<Material> mat)
+      : m_center(center1, center2 - center1), m_radius(std::fmax(0, radius)),
+        m_mat(mat) {}
 
   virtual bool hit(const Ray &r, const Interval &rayI,
                    HitRecord &rec) const override {
 
-    Vec3 oc = m_center - r.origin();
+    Point3 currentCenter = m_center.at(r.time());
+    Vec3 oc = currentCenter - r.origin();
     auto a = r.direction().length_squared();
     auto h = dot(r.direction(), oc);
     auto c = oc.length_squared() - m_radius * m_radius;
@@ -37,7 +42,7 @@ public:
 
     rec.T = root;
     rec.P = r.at(rec.T);
-    Vec3 outwardNormal = (rec.P - m_center) / m_radius;
+    Vec3 outwardNormal = (rec.P - currentCenter) / m_radius;
     rec.setFaceNormal(r, outwardNormal);
     rec.Mat = m_mat;
 
@@ -46,7 +51,7 @@ public:
 
 private:
 private:
-  Point3 m_center;
+  Ray m_center;
   double m_radius;
   std::shared_ptr<Material> m_mat;
 };

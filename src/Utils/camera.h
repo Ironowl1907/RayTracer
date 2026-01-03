@@ -122,10 +122,11 @@ private:
     auto pixel_sample = m_pixel00Loc + ((i + offset.x()) * m_pixelDeltaU) +
                         ((j + offset.y()) * m_pixelDeltaV);
 
-    auto ray_origin = (DefocusAngle <= 0) ? m_center : defocusDiskSample();
-    auto ray_direction = pixel_sample - ray_origin;
+    auto rayOrigin = (DefocusAngle <= 0) ? m_center : defocusDiskSample();
+    auto rayDirection = pixel_sample - rayOrigin;
+    auto rayTime = Random::double_t();
 
-    return Ray(ray_origin, ray_direction);
+    return Ray(rayOrigin, rayDirection, rayTime);
   }
 
   Vec3 sampleSquare() const {
