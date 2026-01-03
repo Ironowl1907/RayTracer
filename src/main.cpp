@@ -59,8 +59,8 @@ int main() {
   Camera cam;
 
   cam.AspectRatio = 16.0 / 9.0;
-  cam.ImageWidth = 1200;
-  cam.SamplesPerPixel = 500;
+  cam.ImageWidth = 800;
+  cam.SamplesPerPixel = 5;
   cam.MaxDepth = 50;
 
   cam.VFov = 20;

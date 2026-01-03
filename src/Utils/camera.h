@@ -7,6 +7,8 @@
 #include "random.h"
 #include "vec3.h"
 #include <cmath>
+#include <iostream>
+#include <ostream>
 
 #define PI 3.14159
 
@@ -28,8 +30,6 @@ public:
   void render(const Hittable &world) {
     initialize();
 
-    std::cout << "P3\n" << ImageWidth << ' ' << m_imageHeight << "\n255\n";
-
     for (int j = 0; j < m_imageHeight; j++) {
       std::clog << "\rScanlines remaining: " << (m_imageHeight - j) << ' '
                 << std::flush;
@@ -39,10 +39,20 @@ public:
           Ray r = getRay(i, j);
           pixelColor += rayColor(r, MaxDepth, world);
         }
-        writeColor(std::cout, m_pixelSamplesScale * pixelColor);
+        m_framebuffer[j * ImageWidth + i] = m_pixelSamplesScale * pixelColor;
       }
     }
     std::clog << "\rDone.                 \n";
+    writeToImage();
+  }
+
+  void writeToImage() const {
+    std::cout << "P3\n" << ImageWidth << ' ' << m_imageHeight << "\n255\n";
+    for (int j = 0; j < m_imageHeight; ++j) {
+      for (int i = 0; i < ImageWidth; ++i) {
+        writeColor(std::cout, m_framebuffer[j * ImageWidth + i]);
+      }
+    }
   }
 
 private:
@@ -75,6 +85,8 @@ private:
     auto defocus_radius = FocusDist * std::tan((DefocusAngle / 2) * PI / 180);
     m_defocusDiskU = m_u * defocus_radius;
     m_defocusDiskV = m_v * defocus_radius;
+
+    m_framebuffer.resize(m_imageHeight * ImageWidth);
   }
 
   Ray getRay(int i, int j) const {
@@ -127,4 +139,6 @@ private:
   Vec3 m_u, m_v, m_w;
   Vec3 m_defocusDiskU;
   Vec3 m_defocusDiskV;
+
+  std::vector<Color> m_framebuffer;
 };
