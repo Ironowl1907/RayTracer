@@ -6,6 +6,7 @@
 #include "material.h"
 #include "random.h"
 #include "vec3.h"
+#include <atomic>
 #include <cmath>
 #include <iostream>
 #include <ostream>
@@ -52,6 +53,8 @@ public:
 
           m_framebuffer[j * ImageWidth + i] = m_pixelSamplesScale * pixelColor;
         }
+
+        m_progressCounter.fetch_add(1);
       }
     };
 
@@ -64,6 +67,14 @@ public:
 
       threads.emplace_back(renderRows, rowStart, rowEnd);
       rowStart = rowEnd;
+    }
+
+    while (m_progressCounter < m_imageHeight) {
+
+      std::clog << "\rProgress: " << m_progressCounter.load() << " / "
+                << m_imageHeight << std::flush;
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
     for (auto &t : threads) {
@@ -115,6 +126,7 @@ private:
     m_defocusDiskV = m_v * defocus_radius;
 
     m_framebuffer.resize(m_imageHeight * ImageWidth);
+    m_progressCounter.store(0);
   }
 
   Ray getRay(int i, int j) const {
@@ -170,4 +182,6 @@ private:
   Vec3 m_defocusDiskV;
 
   std::vector<Color> m_framebuffer;
+
+  std::atomic<int> m_progressCounter;
 };
