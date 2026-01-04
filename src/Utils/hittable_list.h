@@ -1,5 +1,6 @@
 #pragma once
 
+#include "aabb.h"
 #include "hittable.h"
 #include <memory>
 #include <vector>
@@ -16,9 +17,12 @@ public:
 
   void clear() { Objects.clear(); }
 
-  void add(shared_ptr<Hittable> object) { Objects.push_back(object); }
+  void add(shared_ptr<Hittable> object) {
+    Objects.push_back(object);
+    m_bbox = AABB(m_bbox, object->boundingBox());
+  }
 
-  virtual bool hit(const Ray &r, const Interval & rayI,
+  virtual bool hit(const Ray &r, const Interval &rayI,
                    HitRecord &rec) const override {
     HitRecord tempRec;
     bool hitAnything = false;
@@ -34,4 +38,9 @@ public:
 
     return hitAnything;
   }
+
+  AABB boundingBox() const override { return m_bbox; }
+
+private:
+  AABB m_bbox;
 };
