@@ -1,6 +1,7 @@
 #include <memory>
 
 #include "Utils/Color.h"
+#include "Utils/bvh.h"
 #include "Utils/camera.h"
 #include "Utils/hittable_list.h"
 #include "Utils/material.h"
@@ -56,6 +57,8 @@ int main() {
 
   auto material3 = make_shared<Metal>(Color(0.7, 0.6, 0.5), 0.0);
   world.add(make_shared<Sphere>(Point3(4, 1, 0), 1.0, material3));
+
+  world = HittableList(std::make_shared<BVHNode>(world));
 
   Camera cam;
 

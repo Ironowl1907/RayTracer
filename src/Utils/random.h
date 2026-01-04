@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <cstdlib>
 #include <random>
 
@@ -12,5 +13,9 @@ public:
   }
   static inline double double_t(double min, double max) {
     return min + (max - min) * double_t();
+  }
+
+  static inline int int_t(int min, int max) {
+    return (int)double_t(min, max + 1);
   }
 };
