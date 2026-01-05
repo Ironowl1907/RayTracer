@@ -61,6 +61,19 @@ public:
     return true;
   }
 
+  int longestAxis() const {
+    if (X.size() > Y.size())
+      return X.size() > Z.size() ? 0 : 2;
+    return Y.size() > Z.size() ? 1 : 2;
+  }
+
+  static const AABB empty, universe;
+
 private:
 private:
 };
+
+const AABB AABB::empty =
+    AABB(Interval::empty, Interval::empty, Interval::empty);
+const AABB AABB::universe =
+    AABB(Interval::universe, Interval::universe, Interval::universe);
