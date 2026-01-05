@@ -26,12 +26,12 @@ public:
                    HitRecord &rec) const override {
     HitRecord tempRec;
     bool hitAnything = false;
-    auto closeesSoFar = rayI.Max;
+    auto closestSoFar = rayI.Max;
 
     for (const auto &object : Objects) {
-      if (object->hit(r, Interval(rayI.Min, closeesSoFar), tempRec)) {
+      if (object->hit(r, Interval(rayI.Min, closestSoFar), tempRec)) {
         hitAnything = true;
-        closeesSoFar = tempRec.T;
+        closestSoFar = tempRec.T;
         rec = tempRec;
       }
     }

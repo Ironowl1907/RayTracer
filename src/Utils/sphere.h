@@ -10,7 +10,10 @@ public:
   Sphere(const Point3 &staticCenter, double radius,
          std::shared_ptr<Material> mat)
       : m_center(staticCenter, Vec3(0, 0, 0)), m_radius(std::fmax(0, radius)),
-        m_mat(mat) {}
+        m_mat(mat) {
+    Vec3 rvec(radius, radius, radius);
+    m_bbox = AABB(staticCenter - rvec, staticCenter + rvec);
+  }
 
   Sphere(const Point3 &center1, const Point3 &center2, double radius,
          std::shared_ptr<Material> mat)
